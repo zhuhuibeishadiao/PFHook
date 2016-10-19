@@ -1,0 +1,93 @@
+;
+; PFHook_sys.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=PFHook_sys.cat
+DriverVer=10/16/2016,12.30.32.690
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+PFHook_sys.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTx86
+
+[Standard.NTx86]
+%PFHook_sys.DeviceDesc%=PFHook_sys_Device, Root\PFHook_sys ; TODO: edit hw-id
+
+[PFHook_sys_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+PFHook_sys.sys
+
+;-------------- Service installation
+[PFHook_sys_Device.NT.Services]
+AddService = PFHook_sys,%SPSVCINST_ASSOCSERVICE%, PFHook_sys_Service_Inst
+
+; -------------- PFHook_sys driver install sections
+[PFHook_sys_Service_Inst]
+DisplayName    = %PFHook_sys.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\PFHook_sys.sys
+
+;
+;--- PFHook_sys_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+PFHook_sys_Device_CoInstaller_CopyFiles = 11
+
+[PFHook_sys_Device.NT.CoInstallers]
+AddReg=PFHook_sys_Device_CoInstaller_AddReg
+CopyFiles=PFHook_sys_Device_CoInstaller_CopyFiles
+
+[PFHook_sys_Device_CoInstaller_AddReg]
+;
+
+
+[PFHook_sys_Device_CoInstaller_CopyFiles]
+;
+
+
+[SourceDisksFiles]
+;
+
+
+[PFHook_sys_Device.NT.Wdf]
+KmdfService =  PFHook_sys, PFHook_sys_wdfsect
+[PFHook_sys_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "PFHook_sys Installation Disk"
+PFHook_sys.DeviceDesc = "PFHook_sys Device"
+PFHook_sys.SVCDESC = "PFHook_sys Service"
